@@ -38,7 +38,7 @@ end
 function handler.report(err)
     for i=1, #sinks do
         -- handler should not get down by itself
-        pcall(sinks[i], error)
+        pcall(sinks[i], err)
     end
 end
 

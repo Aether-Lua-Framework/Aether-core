@@ -1,0 +1,7 @@
+env-5.4/
+env-5.5/
+*.o
+*.so
+luacov.stats.out
+luacov.report.out
+.DS_Storeenv-5.4/
