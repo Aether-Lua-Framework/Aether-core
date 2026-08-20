@@ -1,5 +1,11 @@
 local errors = {}
 
+local clock = (os and os.time) or function() return 0 end
+function errors.setClock(fn)
+  clock = fn
+  return fn
+end
+
 errors.Kind = {
   unknown      = "unknown",
   invalid      = "invalid",
@@ -48,6 +54,7 @@ local function newError(kind, message)
     message = message or "",
     context = {},
     cause = nil,
+    time = clock()
   }, Error_mt)
 end
 
