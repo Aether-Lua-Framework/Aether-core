@@ -1,0 +1,2 @@
+-- source env-5.4/bin/activate
+-- lua -v
