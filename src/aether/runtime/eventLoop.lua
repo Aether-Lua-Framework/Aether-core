@@ -26,6 +26,8 @@ function eventLoop:run()
     self.running = false
     if not ok then
         handler.report(errors.wrap(err, "event loop terminated with error"))
+        -- print("  raw error:", err)
+        -- print("  raw type:", type(err))
         return false, err
     end
     return true
