@@ -32,3 +32,20 @@ end
 function Conn:close()
     self.raw:close()
 end
+
+-- Listener Wrapper
+local Listener = {}
+Listener.__index = Listener
+
+-- get a socket connection
+function Listener:accept()
+    local raw, err = self.raw:accept()
+    if not raw then
+        return nil, errors.wrap(err, "accept failed")
+    end
+    return wrapConn(raw)
+end
+
+function Listener:close()
+    self.raw:close()
+end
