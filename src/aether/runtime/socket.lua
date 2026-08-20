@@ -49,3 +49,16 @@ end
 function Listener:close()
     self.raw:close()
 end
+
+-- Entry Point
+function socket.listen(host, port)
+    local raw, err = csocket.listen(host, port)
+    if not raw then
+        return nil, errors.wrap(err, "failed tp listen")
+            :with("host", host)
+            :with("port", port)
+    end
+    return setmetatable({ raw = raw }, Listener)
+end
+
+return socket
