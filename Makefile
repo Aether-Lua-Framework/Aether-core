@@ -1,7 +1,7 @@
 LUA := ./env-5.4/bin/lua
 LUA_PATH_SETUP = LUA_PATH="./src/?.lua;./src/?/init.lua;$$LUA_PATH"
 
-.PHONY: repl loop-test
+.PHONY: repl loop-test hello
 
 # 경로 잡힌 REPL
 repl:
@@ -10,3 +10,6 @@ repl:
 # event_loop A/B 동시성 확인
 loop-test:
 	@$(LUA_PATH_SETUP) $(LUA) examples/loop_test.lua
+
+	hello:
+	@$(LUA_PATH_SETUP) $(LUA) examples/hello_tcp.luagit 
