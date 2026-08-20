@@ -1,15 +1,16 @@
 LUA := ./env-5.4/bin/lua
-LUA_PATH_SETUP = LUA_PATH="./src/?.lua;./src/?/init.lua;$$LUA_PATH"
+LUAROCKS := ./env-5.4/bin/luarocks
 
-.PHONY: repl loop-test hello
+# luarocks가 설치한 것들의 경로 + 우리 프로젝트 경로
+LUA_PATH_SETUP = eval "$$($(LUAROCKS) path)" && export LUA_PATH="./src/?.lua;./src/?/init.lua;$$LUA_PATH"
 
-# 경로 잡힌 REPL
-repl:
-	@$(LUA_PATH_SETUP) $(LUA) -i -e "aether = require('aether')"
+.PHONY: hello loop-test repl
 
-# event_loop A/B 동시성 확인
+hello:
+	@$(LUA_PATH_SETUP) && $(LUA) examples/hello_tcp.lua
+
 loop-test:
-	@$(LUA_PATH_SETUP) $(LUA) examples/loop_test.lua
+	@$(LUA_PATH_SETUP) && $(LUA) examples/loop_test.lua
 
-	hello:
-	@$(LUA_PATH_SETUP) $(LUA) examples/hello_tcp.luagit 
+repl:
+	@$(LUA_PATH_SETUP) && $(LUA) -i
