@@ -6,6 +6,9 @@ function errors.setClock(fn)
   return fn
 end
 
+
+local MAX_CAUSE_DEPTH = 32 -- can change
+
 errors.Kind = {
   unknown      = "unknown",
   invalid      = "invalid",
@@ -121,10 +124,12 @@ end
 function errors.format(e)
   local parts = {}
   local cur = e
+  local depth = 0
 
-  while cur do
+  while cur and depth < MAX_CAUSE_DEPTH do
     parts[#parts+1] = string.format("[%s] %s", cur.kind, cur.message)
     cur = cur.cause
+    depth = depth + 1
   end
   return table.concat(parts, ": ")
 end
