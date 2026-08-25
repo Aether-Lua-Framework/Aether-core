@@ -2,7 +2,7 @@
 local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 -- encoder
-local function base64encode()
+local function base64encode(data)
     local result = {}
     local bytes = { data:byte(1, #data) }
     for i = 1, #bytes, 3 do
@@ -41,7 +41,9 @@ local function base64urlDecode(str)
             bits = bits + 6
             if bits >= 8 then
                 bits = bits - 8
-                result[#result + 1] = string.char(math.floor(n / (2 ^ bits)) % 256)
+                local byte = math.floor(n / 2 ^ bits) % 256
+                result[#result + 1] = string.char(byte)
+                n = n % (2 ^ bits)
             end
         end
     end
