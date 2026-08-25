@@ -57,8 +57,15 @@ return {
     provides = { "jwt" },
     setup = function(app)
         app.jwt = {
-            sign = function(payload, secret) ... end,
-            verify = function(token, secret) ... end,
+            -- token provides
+            sign = function(payload, secret)
+                local header = base64url(json.encode({ alg = "SHA256", typ = "JWT" }))
+                local body = base64url(json.encode(payload))
+                local signingInput = header .. "." .. body
+                local signature = base64url(app.crypto.hmacSha256(secret, signingInput))
+                return signingInput .. "." .. signature
+            end,
+            
         }
     end
 }
