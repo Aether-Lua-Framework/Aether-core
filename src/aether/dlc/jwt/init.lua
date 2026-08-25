@@ -65,7 +65,24 @@ return {
                 local signature = base64url(app.crypto.hmacSha256(secret, signingInput))
                 return signingInput .. "." .. signature
             end,
-            
+            -- token verify
+            verify = function(token, secret)
+                local header, body, signature = token:match("^([^.]+)%.([^.]+)%.([^.]+)$")
+                if not header then
+                    return nil, "malformed token"
+                end
+
+                local expected = base64url(app.crypto.hmacSha256(secret, header .. "." .. body))
+                if signature ~= expected then
+                    return nil, "invalid signature"
+                end
+
+                local payload = json.decode(base64urlDecode(body))
+                if payload.exp and os.time() > payload.exp then
+                    return nil, "token expired"
+                end
+                return payload
+            end,
         }
     end
 }
