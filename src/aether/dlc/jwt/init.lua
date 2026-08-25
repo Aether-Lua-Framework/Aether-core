@@ -50,7 +50,6 @@ local function base64urlDecode(str)
     return table.concat(result)
 end
 
-
 return {
     name = "jwt",
     requires = { "crypto" },
