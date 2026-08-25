@@ -1,5 +1,3 @@
-local json = require("dkjson")
-
 -- base64url
 local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
@@ -56,6 +54,8 @@ return {
     needsLibrary = { "dkjson" },
     provides = { "jwt" },
     setup = function(app)
+        local json = require("dkjson")
+
         app.jwt = {
             -- token provides
             sign = function(payload, secret)
