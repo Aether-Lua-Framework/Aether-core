@@ -1,10 +1,8 @@
-local json = require("dkjson")
-
 -- base64url
 local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 -- encoder
-local function base64encode()
+local function base64encode(data)
     local result = {}
     local bytes = { data:byte(1, #data) }
     for i = 1, #bytes, 3 do
@@ -43,7 +41,9 @@ local function base64urlDecode(str)
             bits = bits + 6
             if bits >= 8 then
                 bits = bits - 8
-                result[#result + 1] = string.char(math.floor(n / (2 ^ bits)) % 256)
+                local byte = math.floor(n / 2 ^ bits) % 256
+                result[#result + 1] = string.char(byte)
+                n = n % (2 ^ bits)
             end
         end
     end
@@ -56,9 +56,38 @@ return {
     needsLibrary = { "dkjson" },
     provides = { "jwt" },
     setup = function(app)
+        local json = require("dkjson")
+
         app.jwt = {
-            sign = function(payload, secret) ... end,
-            verify = function(token, secret) ... end,
+            -- token provides
+            sign = function(payload, secret)
+                local header = base64url(json.encode({ alg = "SHA256", typ = "JWT" }))
+                local body = base64url(json.encode(payload))
+                local signingInput = header .. "." .. body
+                local signature = base64url(app.crypto.hmacSha256(secret, signingInput))
+                return signingInput .. "." .. signature
+            end,
+            -- token verify
+            verify = function(token, secret)
+                -- token decoding
+                local header, body, signature = token:match("^([^.]+)%.([^.]+)%.([^.]+)$")
+                if not header then
+                    return nil, "malformed token"
+                end
+
+                -- compare with expected and signature
+                local expected = base64url(app.crypto.hmacSha256(secret, header .. "." .. body))
+                if signature ~= expected then
+                    return nil, "invalid signature"
+                end
+
+                -- signature passed -> payload decondig
+                local payload = json.decode(base64urlDecode(body))
+                if payload.exp and os.time() > payload.exp then
+                    return nil, "token expired"
+                end
+                return payload
+            end,
         }
     end
 }
