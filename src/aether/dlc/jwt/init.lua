@@ -24,7 +24,7 @@ end
 
 -- returns encoded_data ( + => -, / => _, and deletes paddings)
 local function base64url(data)
-    return (base64encode(data):gsub("%+", "%-"):gsub("/", "_"):gsub("=", ""))
+    return (base64encode(data):gsub("%+", "-"):gsub("/", "_"):gsub("=", ""))
 end
 
 local function base64urlDecode(str)
@@ -61,7 +61,7 @@ return {
         app.jwt = {
             -- token provides
             sign = function(payload, secret)
-                local header = base64url(json.encode({ alg = "SHA256", typ = "JWT" }))
+                local header = base64url(json.encode({ alg = "HS256", typ = "JWT" }))
                 local body = base64url(json.encode(payload))
                 local signingInput = header .. "." .. body
                 local signature = base64url(app.crypto.hmacSha256(secret, signingInput))
@@ -75,6 +75,14 @@ return {
                     return nil, "malformed token"
                 end
 
+                local headerData = json.decode(base64urlDecode(header))
+                if type(headerData) ~= "table" then
+                    return nil, "malformed header"
+                end
+                if headerData.alg ~= "HS256" then
+                    return nil, "unexpected algorithm"
+                end
+
                 -- compare with expected and signature
                 local expected = base64url(app.crypto.hmacSha256(secret, header .. "." .. body))
                 if signature ~= expected then
@@ -83,6 +91,9 @@ return {
 
                 -- signature passed -> payload decondig
                 local payload = json.decode(base64urlDecode(body))
+                if type(payload) ~= "table" then
+                    return nil, "malformed payload"
+                end
                 if payload.exp and os.time() > payload.exp then
                     return nil, "token expired"
                 end
