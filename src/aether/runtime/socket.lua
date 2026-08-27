@@ -7,6 +7,7 @@ local function attatchErrorHandler(raw)
     raw:onerror(function (_, method, err)
         return err
     end)
+    return raw
 end
 
 -- Connection Wrapper
