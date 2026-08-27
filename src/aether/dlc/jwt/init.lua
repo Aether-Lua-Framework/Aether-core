@@ -76,6 +76,9 @@ return {
                 end
 
                 local headerData = json.decode(base64urlDecode(header))
+                if not headerData then
+                    return nil, "malformed header"
+                end
                 if headerData.alg ~= "HS256" then
                     return nil, "unexpected algorithm"
                 end
@@ -88,6 +91,9 @@ return {
 
                 -- signature passed -> payload decondig
                 local payload = json.decode(base64urlDecode(body))
+                if type(payload) ~= "table" then
+                    return nil, "malformed payload"
+                end
                 if payload.exp and os.time() > payload.exp then
                     return nil, "token expired"
                 end
