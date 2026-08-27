@@ -62,7 +62,7 @@ end
 function socket.listen(host, port)
     local raw, err = csocket.listen(host, port)
     if not raw then
-        return nil, errors.wrap(err, "failed tp listen")
+        return nil, errors.wrap(err, "failed to listen")
             :with("host", host)
             :with("port", port)
     end
