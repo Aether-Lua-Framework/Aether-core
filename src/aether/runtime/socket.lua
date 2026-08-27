@@ -3,6 +3,12 @@ local errors = require("aether.errors.error")
 
 local socket = {}
 
+local function attatchErrorHandler(raw)
+    raw:onerror(function (_, method, err)
+        return err
+    end)
+end
+
 -- Connection Wrapper
 local Conn = {}
 Conn.__index = Conn
