@@ -76,7 +76,7 @@ return {
                 end
 
                 local headerData = json.decode(base64urlDecode(header))
-                if not headerData then
+                if type(headerData) ~= "table" then
                     return nil, "malformed header"
                 end
                 if headerData.alg ~= "HS256" then
