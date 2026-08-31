@@ -40,6 +40,9 @@ return {
                 end
             end)
         end
-        
+
+        app.run = function()
+            app._loop:run()
+        end
     end,
 }
