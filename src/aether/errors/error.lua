@@ -35,7 +35,6 @@ function errors.isError(x)
 end
 
 
-
 -- without teal, for stability
 local known_kinds = {}
 for _, v in pairs(errors.Kind) do
@@ -46,8 +45,6 @@ function errors.registerKind(kind)
     known_kinds[kind] = true
     return kind
 end
-
-
 
 
 -- Error Constructor
@@ -75,8 +72,6 @@ function errors.of(kind, message)
 end
 
 
-
-
 -- Error Wrapper
 function errors.wrap(cause, message)
     local wrapped
@@ -91,7 +86,6 @@ function errors.wrap(cause, message)
 
     return wrapped
 end
-
 
 
 -- __index method sharing
@@ -116,8 +110,6 @@ function Error:is(kind)
     end
     return false
 end
-
-
 
 
 -- Do not change this signature.
