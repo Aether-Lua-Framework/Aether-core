@@ -59,9 +59,43 @@ function kernel.build(dlcs)
         end
     end
 
+    local byName = {}
     for _, dlc in ipairs(dlcs) do
+        byName[dlc.name] = dlc
+    end
+
+    local done = {}
+    local visiting = {}
+
+    local function setupDLC(dlc)
+        if done[dlc.name] then
+            return
+        end
+        if visiting[dlc.name] then
+            error(errors.of("composition",
+                "circular dependency detected involving '" .. dlc.name .. "'")
+                :with("module", dlc.name)
+                :with("info", "two DLCs require each other, directly or indirectly"))
+        end
+
+        visiting[dlc.name] = true
+        
+        for _, need in ipairs(dlc.requires or {}) do
+            local providerName = provided[need]        
+            local provider = byName[providerName]
+            if provider then
+                setupDLC(provider)                     
+            end
+        end
+
+        visiting[dlc.name] = nil
+        done[dlc.name] = true
         if dlc.setup then
             dlc.setup(app)
+        end
+
+        for _, dlc in ipairs(dlcs) do
+            setupDLC(dlc)
         end
     end
 
