@@ -93,10 +93,10 @@ function kernel.build(dlcs)
         if dlc.setup then
             dlc.setup(app)
         end
-
-        for _, dlc in ipairs(dlcs) do
-            setupDLC(dlc)
-        end
+    end
+    
+    for _, dlc in ipairs(dlcs) do
+        setupDLC(dlc)
     end
 
     return app
