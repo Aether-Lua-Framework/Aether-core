@@ -20,9 +20,9 @@ return {
 
         app.serve = function(_, host, port, handler)
             app._loop:spawn(function()
-                local server, err = socket.listen(host, port)
+                local server, lerr = socket.listen(host, port)
                 if not server then
-                    print("listen error: ", tostring(err))
+                    errorHandler.report(errors.wrap(lerr, "listen failed"))
                     return
                 end
                 
@@ -44,7 +44,7 @@ return {
                             end
                         end)
                     else
-                        print("accept error : " .. aerr)
+                        errorHandler.report(errors.wrap(aerr, "accept failed"))
                     end
                 end
             end)
