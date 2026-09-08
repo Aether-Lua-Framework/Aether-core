@@ -122,6 +122,10 @@ function errors.format(e)
 
     while cur and depth < MAX_CAUSE_DEPTH do
         parts[#parts+1] = string.format("[%s] %s", cur.kind, cur.message)
+        -- raw errors
+        if cur.context and cur.context.raw ~= nil then
+            parts[#parts+1] = string.format("(raw: %s)", tostring(cur.context.raw))
+        end
         cur = cur.cause
         depth = depth + 1
     end
