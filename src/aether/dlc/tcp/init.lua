@@ -5,7 +5,7 @@ return {
     name = "tcp",
     requires = {},
     needsLibrary = {},
-    provides = { "tcp" },
+    provides = { "stream" },
     setup = function(app)
 
         if not app._loop then
