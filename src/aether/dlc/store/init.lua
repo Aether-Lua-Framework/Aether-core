@@ -7,21 +7,28 @@ return {
     setup = function(app)
         local tables = {}
 
-        local function tableInterface(data)
+        local function tableInterface(table_)
+            local nextId = 0
+
             return {
-                set = function(_, key, value)
-                    data[key] = value
-                end,
-                get = function(_, key)
-                    return data[key]
-                end,
-                delete = function(_, key)
-                    data[key] = nil
-                end,
-                all = function(_)
-                    return data
-                end,
-            }
+            insert = function(_, value)
+                table_.nextId = table_.nextId + 1
+                table_.data[table_.nextId] = value
+                return table_.nextId
+            end,
+            set = function(_, key, value)
+                table_.data[key] = value
+            end,
+            get = function(_, key)
+                return table_.data[key]
+            end,
+            delete = function(_, key)
+                table_.data[key] = nil
+            end,
+            all = function(_)
+                return table_.data
+            end,
+        }
         end
 
         app.store = {
@@ -30,7 +37,7 @@ return {
                     error(errors.of("conflict",
                         "table '" .. name .. "' already exists"))
                 end
-                tables[name] = {}
+                tables[name] = { data = {}, nextId = 0 }
                 return tableInterface(tables[name])
             end,
 
@@ -38,7 +45,7 @@ return {
                 if not tables[name] then
                     error(errors.of("not_found",
                         "table '" .. name .. "' does not exist")
-                        :with("hint", "create it first: app:store('create', '" .. name .. "')"))
+                        :with("hint", "create it first: app.store:create('" .. name .. "')"))
                 end
                 return tableInterface(tables[name])
             end
