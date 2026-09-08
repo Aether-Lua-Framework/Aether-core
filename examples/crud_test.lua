@@ -10,8 +10,7 @@ app.store:create("posts")
 
 app:post("/users", function(req)
     local users = app.store:table("users")     -- 고침
-    local id = tostring(os.time())
-    users:set(id, req.body)
+    local id = users:insert(req.body)
     return "created user: " .. id
 end)
 
@@ -26,8 +25,8 @@ end)
 
 app:post("/posts", function(req)
     local posts = app.store:table("posts")     -- 고침
-    posts:set(tostring(os.time()), req.body)
-    return "created post"
+    local id = posts:insert(req.body)
+    return "created post" .. id
 end)
 
 app:get("/posts", function(req)
