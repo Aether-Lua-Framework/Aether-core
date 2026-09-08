@@ -59,21 +59,22 @@ return {
                 local handler = routes[method .. " " .. path]
 
                 if handler then
-                    local body = handler()
+                    local resBody = handler(req)
+                    resBody = resBody or ""
                     conn:write(
                         "HTTP/1.1 200 OK\r\n" ..
-                        "Content-Length: " .. #body .. "\r\n" ..
+                        "Content-Length: " .. #resBody .. "\r\n" ..
                         "Content-Type: text/plain\r\n" ..
                         "\r\n" ..
-                        body
+                        resBody
                     )
                 else
-                    local body = "Not Found"
+                    local resBody = "Not Found"
                     conn:write(
                         "HTTP/1.1 404 Not Found\r\n" ..
-                        "Content-Length: " .. #body .. "\r\n" ..
+                        "Content-Length: " .. #resBody .. "\r\n" ..
                         "\r\n" ..
-                        body
+                        resBody
                     )
                 end
 
