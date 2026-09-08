@@ -13,5 +13,9 @@ app:get("/ping", function()
     return "pong"
 end)
 
+app:post("/echo", function(req)
+    return "You sent: " .. req.body
+end)
+
 app:serveHttp("0.0.0.0", 8080)
 app:run()

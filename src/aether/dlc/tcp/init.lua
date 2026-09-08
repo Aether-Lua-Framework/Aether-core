@@ -32,7 +32,11 @@ return {
                     if conn then
                         -- new task spawn
                         app._loop:spawn(function()
-                            handler(conn)
+                            local ok, err = pcall(handler, conn)
+                            if not ok then
+                                print("handler error: " .. tostring(err))
+                                pcall(function() conn:close() end)
+                            end
                         end)
                     else
                         print("accept error : " .. aerr)

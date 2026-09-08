@@ -28,30 +28,53 @@ return {
                     return
                 end
 
-                -- throw away other headers
+                local headers = {} -- make header buffer instead of throw 
+                local contentLength = 0
                 while true do
                     local line = conn:read("*l")
                     if not line or line == "" then break end
+
+                    local key, value = line:match("^(.-):%s*(.*)$")
+                    if key then
+                        key = key:lower()
+                        headers[key] = value
+                        if key == "content-length" then
+                            contentLength = tonumber(value) or 0
+                        end
+                    end
                 end
+
+                local body = ""
+                if contentLength > 0 then
+                    body = conn:read(contentLength) or ""
+                end
+                
+                local req = {
+                    method = method,
+                    path = path,
+                    headers = headers,
+                    body = body,
+                }
 
                 local handler = routes[method .. " " .. path]
 
                 if handler then
-                    local body = handler()
+                    local resBody = handler(req)
+                    resBody = resBody or ""
                     conn:write(
                         "HTTP/1.1 200 OK\r\n" ..
-                        "Content-Length: " .. #body .. "\r\n" ..
+                        "Content-Length: " .. #resBody .. "\r\n" ..
                         "Content-Type: text/plain\r\n" ..
                         "\r\n" ..
-                        body
+                        resBody
                     )
                 else
-                    local body = "Not Found"
+                    local resBody = "Not Found"
                     conn:write(
                         "HTTP/1.1 404 Not Found\r\n" ..
-                        "Content-Length: " .. #body .. "\r\n" ..
+                        "Content-Length: " .. #resBody .. "\r\n" ..
                         "\r\n" ..
-                        body
+                        resBody
                     )
                 end
 
