@@ -24,12 +24,13 @@ $(warning [aether] $(LUA) 를 찾을 수 없습니다 — 로컬 Lua 5.4 env 를
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: help list test check repl $(EXAMPLES) $(ALIASES)
+.PHONY: help list test check repl hello $(EXAMPLES) $(ALIASES)
 
 help:
 	@echo "Aether dev targets"
 	@echo ""
 	@echo "  make <example>    examples/<example>.lua 실행"
+	@echo "  make hello        hello_tcp 별칭 (예전 이름)"
 	@echo "  make list         실행 가능한 예제 목록"
 	@echo "  make test         spec/ 를 busted 로 실행"
 	@echo "  make check        모든 .lua 문법 검사 (luac -p)"
@@ -43,6 +44,9 @@ list:
 # examples/*.lua -> 같은 이름의 타깃
 $(EXAMPLES): %: $(EXAMPLES_DIR)/%.lua
 	@$(RUN) $(LUA) $<
+
+# 예전부터 쓰던 짧은 이름
+hello: hello_tcp
 
 # crypto-test 처럼 하이픈으로도 호출할 수 있게
 $(ALIASES):
