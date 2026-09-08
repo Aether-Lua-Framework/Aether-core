@@ -34,6 +34,7 @@ function Conn:write(data)
     if not ok then
         return nil, errors.wrap(err, "socket write failed")
     end
+    self.raw:flush()
     return true
 end
 
