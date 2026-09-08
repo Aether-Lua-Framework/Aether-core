@@ -29,7 +29,7 @@ return {
                 end
 
                 local headers = {} -- make header buffer instead of throw 
-                local contentLength = {}
+                local contentLength = 0
                 while true do
                     local line = conn:read("*l")
                     if not line or line == "" then break end
