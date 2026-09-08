@@ -46,7 +46,11 @@ return {
 
                 local body = ""
                 if contentLength > 0 then
-                    body = conn:read(contentLength) or ""
+                    while #body < contentLength do
+                        local chunk = conn:read(contentLength - #body)
+                        if not chunk or chunk == "" then break end
+                        body = body .. chunk
+                    end
                 end
                 
                 local req = {

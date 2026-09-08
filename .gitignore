@@ -5,3 +5,4 @@ env-5.5/
 luacov.stats.out
 luacov.report.out
 .DS_Storeenv-5.4/
+logs/*

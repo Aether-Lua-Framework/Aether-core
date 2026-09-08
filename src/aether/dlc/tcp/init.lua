@@ -1,5 +1,7 @@
 local socket = require("aether.runtime.socket")
 local eventLoop = require("aether.runtime.eventLoop")
+local errors = require("aether.errors.error")
+local errorHandler = require("aether.errors.handler")
 
 return {
     name = "tcp",
@@ -18,9 +20,9 @@ return {
 
         app.serve = function(_, host, port, handler)
             app._loop:spawn(function()
-                local server, err = socket.listen(host, port)
+                local server, lerr = socket.listen(host, port)
                 if not server then
-                    print("listen error: ", tostring(err))
+                    errorHandler.report(errors.wrap(lerr, "listen failed"))
                     return
                 end
                 
@@ -34,12 +36,15 @@ return {
                         app._loop:spawn(function()
                             local ok, err = pcall(handler, conn)
                             if not ok then
-                                print("handler error: " .. tostring(err))
-                                pcall(function() conn:close() end)
+                                errorHandler.report(errors.wrap(err, "handler failed"))
+                                pcall(function()
+                                    conn:write("HTTP/1.1 500 Internal Server Error\r\n\r\n")
+                                    conn:close()
+                                end)
                             end
                         end)
                     else
-                        print("accept error : " .. aerr)
+                        errorHandler.report(errors.wrap(aerr, "accept failed"))
                     end
                 end
             end)
