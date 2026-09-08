@@ -34,7 +34,28 @@ return {
                     if not line or line == "" then break end
                 end
 
-                
+                local handler = routes[method .. " " .. path]
+
+                if handler then
+                    local body = handler()
+                    conn:write(
+                        "HTTP/1.1 200 OK\r\n" ..
+                        "Content-Length: " .. #body .. "\r\n" ..
+                        "Content-Type: text/plain\r\n" ..
+                        "\r\n" ..
+                        body
+                    )
+                else
+                    local body = "Not Found"
+                    conn:write(
+                        "HTTP/1.1 404 Not Found\r\n" ..
+                        "Content-Length: " .. #body .. "\r\n" ..
+                        "\r\n" ..
+                        body
+                    )
+                end
+
+                conn:close()
             end)
         end
     end
