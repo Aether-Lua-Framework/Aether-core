@@ -17,5 +17,9 @@ app:post("/echo", function(req)
     return "You sent: " .. req.body
 end)
 
+app:get("/crash", function(req)
+    return "x" .. nil   -- 일부러 nil concat 에러
+end)
+
 app:serveHttp("0.0.0.0", 8080)
 app:run()
