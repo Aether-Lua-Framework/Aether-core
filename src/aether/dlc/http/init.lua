@@ -15,7 +15,13 @@ return {
         app.serveHttp = function(_, host, port)
             app:serve(host, port, function(conn)
                 -- read first request line
+                local requestLine, err = conn:read("*l")
+                if not requestLine then
+                    conn:close()
+                    return
+                end
 
+                
             end)
         end
     end
