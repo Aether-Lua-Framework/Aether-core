@@ -21,6 +21,14 @@ return {
                     return
                 end
 
+                local method, path = requestLine:match("^(%S+)%s+(%S+)")
+                if not method then
+                    conn:write("HTTP/1.1 400 Bad Request\r\n\r\n")
+                    conn:close()
+                    return
+                end
+
+                -- throw away other headers
                 
             end)
         end
