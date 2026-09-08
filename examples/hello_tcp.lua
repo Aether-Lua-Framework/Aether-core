@@ -7,7 +7,7 @@ local loop = event_loop.new()
 -- task that running on accept 
 loop:spawn(function()
     local server, err = socket.listen("0.0.0.0", PORT)
-    if err then
+    if not server then
         print("listen error:", tostring(err))
         return
     end
