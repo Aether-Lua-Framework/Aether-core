@@ -29,6 +29,11 @@ return {
                 end
 
                 -- throw away other headers
+                while true do
+                    local line = conn:read("*l")
+                    if not line or line == "" then break end
+                end
+
                 
             end)
         end
